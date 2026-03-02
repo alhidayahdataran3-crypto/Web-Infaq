@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Donation {
+  id        Int      @id @default(autoincrement())
+  name      String
+  nominal   Float
+  proofUrl  String
+  showName  Boolean  @default(true)
+  status    String   @default("PENDING") // PENDING, ACC, INVALID
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  amount    Int // e.g., quantity
+  price     Float
+  proofUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
