@@ -11,7 +11,7 @@ model Donation {
   id        Int      @id @default(autoincrement())
   name      String
   nominal   Float
-  proofUrl  String
+  proofUrl  String?
   showName  Boolean  @default(true)
   status    String   @default("PENDING") // PENDING, ACC, INVALID
   createdAt DateTime @default(now())

@@ -19,7 +19,10 @@ export async function GET(request: Request) {
         const oldDonations = await prisma.donation.findMany({
             where: {
                 createdAt: { lt: thirtyDaysAgo },
-                proofUrl: { not: null },
+                NOT: [
+                    { proofUrl: null },
+                    { proofUrl: "" }
+                ]
             },
             select: { id: true, proofUrl: true },
         });
@@ -46,7 +49,10 @@ export async function GET(request: Request) {
         const oldExpenses = await prisma.expense.findMany({
             where: {
                 createdAt: { lt: thirtyDaysAgo },
-                proofUrl: { not: null },
+                NOT: [
+                    { proofUrl: null },
+                    { proofUrl: "" }
+                ]
             },
             select: { id: true, proofUrl: true },
         });
