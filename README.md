@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🕌 Panduan Pengelolaan Website Infaq Masjid Al-Hidayah
 
-## Getting Started
+Dokumen ini berisi informasi krusial untuk mengelola website setelah penarikan mahasiswa KKN. Pastikan dokumen ini tersimpan aman di tangan takmir masjid.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📧 Akun Utama Website
+Semua layanan (GitHub, Vercel, Supabase, Cloudflare) wajib menggunakan atau ditautkan ke email pusat masjid:
+- **Email Utama**: `alhidayah.dataran3@gmail.com`
+- **Tujuan**: Memudahkan proses *reset password* dan pengelolaan jika pengurus berganti.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Struktur Layanan (Infrastruktur)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Hostinger (Pembelian Domain)
+- **Fungsi**: Tempat membayar tagihan domain `minggir.site` setiap tahun.
+- **Biaya**: Sekitar Rp 150rb - 200rb (akan ditagih 1 tahun dari sekarang).
+- **Aksi**: Jangan ubah pengaturan "Nameservers" di sini karena sudah diarahkan ke Cloudflare.
 
-## Learn More
+### 2. Cloudflare (DNS & Subdomain)
+- **Fungsi**: Menghubungkan domain `minggir.site` ke server website.
+- **Subdomain**: `masjidalhidayah.minggir.site` diatur di sini lewat record `CNAME`.
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Vercel (Server Website)
+- **Fungsi**: Server tempat program website berjalan 24 jam.
+- **Otomatisasi**: Setiap kali ada update kode di GitHub, Vercel akan otomatis memperbarui tampilan website.
+- **Troubleshooting**: Jika web tiba-tiba error, masuk ke dashboard Vercel dan lakukan **Redeploy**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Supabase (Data Keuangan & Foto)
+- **Fungsi**: Menyimpan data donatur, nominal infaq, dan foto bukti transfer.
+- **PENTING**: Jika website tidak dikunjungi selama 1-2 minggu, Supabase versi gratis akan otomatis "Pause" (Tidur). 
+  - **Efek**: Web akan muncul error "Database connection unavailable".
+  - **Solusi**: Login ke Supabase dengan email di atas, lalu klik **"Restore Project"**.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔐 Cara Login Admin
+1. Buka alamat: `https://masjidalhidayah.minggir.site/admin`
+2. Klik tombol **Login with Google**.
+3. Pilih akun email `alhidayah.dataran3@gmail.com`.
+4. Anda akan masuk ke Dashboard untuk mengelola Donasi dan Pengeluaran.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 💾 Pengelolaan Data
+- **Update Pengeluaran**: Pengurus wajib menginput setiap pengeluaran masjid di menu **"Pengeluaran"** agar saldo yang tampil di halaman depan akurat.
+- **Konfirmasi Donasi**: Donasi yang masuk berstatus **Pending**. Admin harus mengecek bukti transfer terlebih dahulu sebelum klik tombol **"Terima (ACC)"**.
+
+---
+
+## 🏁 Penutup
+Website ini sudah dirancang menggunakan layanan **Free Tier** (Gratis) untuk menghemat biaya operasional masjid. Satu-satunya biaya rutin hanya perpanjangan domain setiap 1 tahun sekali.
+
+---
+*Salam Perjuangan, Tim KKN - Masjid Al-Hidayah (2025)*
