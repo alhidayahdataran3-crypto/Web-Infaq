@@ -53,4 +53,4 @@ Semua layanan (GitHub, Vercel, Supabase, Cloudflare) wajib menggunakan atau dita
 Website ini sudah dirancang menggunakan layanan **Free Tier** (Gratis) untuk menghemat biaya operasional masjid. Satu-satunya biaya rutin hanya perpanjangan domain setiap 1 tahun sekali.
 
 ---
-*Salam Perjuangan, Tim KKN - Masjid Al-Hidayah (2025)*
+*Salam Perjuangan, Tim KKN - Masjid Al-Hidayah (2026)*
