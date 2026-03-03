@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🕌 Sistem Informasi Infaq & Pengelolaan Keuangan Masjid Al-Hidayah
 
-## Getting Started
+Website ini adalah platform digital untuk transparansi pengelolaan keuangan, donasi infaq, dan pelaporan pengeluaran Masjid Al-Hidayah. Proyek ini dikembangkan dan diserahterimakan oleh **Tim KKN Masjid Al-Hidayah (2026)** untuk dapat dikelola secara mandiri oleh pihak Takmir.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Akses Cepat (Quick Access)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Halaman Publik**: [masjidalhidayah.minggir.site](https://masjidalhidayah.minggir.site)
+- **Halaman Admin**: [masjidalhidayah.minggir.site/admin](https://masjidalhidayah.minggir.site/admin)
+- **Email Pengelola**: `alhidayah.dataran3@gmail.com`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Panduan Operasional Takmir
 
-## Learn More
+### 1. Masuk ke Panel Admin
+1. Buka halaman `/admin`.
+2. Klik **"Login with Google"**.
+3. Gunakan akun email pusat masjid (`alhidayah.dataran3@gmail.com`).
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Mengelola Donasi (Infaq)
+- Donasi yang masuk melalui website akan berstatus **Pending**.
+- Admin wajib memeriksa bukti transfer secara manual.
+- Klik **"Terima (ACC)"** jika dana sudah masuk ke rekening masjid agar muncul di laporan publik.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Menginput Pengeluaran
+- Setiap pengeluaran masjid harus diinput melalui menu **"Pengeluaran"**.
+- Masukkan nominal, keterangan, dan foto nota jika ada.
+- Sistem akan otomatis menghitung sisa saldo kas masjid di halaman depan.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔋 Pemeliharaan Teknis (Maintenance)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Website ini dirancang untuk berjalan dengan biaya operasional minimal (hanya biaya domain tahunan).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### ⚡ Pemulihan Database (Supabase)
+Jika website tidak diakses selama 1-2 minggu, database mungkin akan memasuki mode "Pause" (Tidur).
+- **Gejala**: Muncul pesan error "Database connection unavailable".
+- **Solusi**: Login ke [Supabase](https://supabase.com), pilih proyek, dan klik **"Restore Project"**.
+
+### 🌐 Perpanjangan Domain
+- **Tempat**: Hostinger
+- **Jadwal**: 1 tahun sekali (cek email notifikasi dari Hostinger).
+- **PENTING**: Pastikan domain `minggir.site` selalu diperpanjang tepat waktu.
+
+### 🏗️ Infrastruktur (Teknologi)
+- **Framework**: Next.js 15 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Hosting**: Vercel
+- **DNS/Security**: Cloudflare
+
+---
+
+## 🛡️ Hak Cipta & Serah Terima
+Seluruh kode sumber dan aset digital ini telah diserahkan sepenuhnya kepada Takmir Masjid Al-Hidayah. Tim KKN berharap sistem ini dapat membantu meningkatkan kepercayaan jamaah melalui transparansi keuangan digital.
+
+*Salam Takzim,*  
+**Tim KKN Masjid Al-Hidayah (2025)**
