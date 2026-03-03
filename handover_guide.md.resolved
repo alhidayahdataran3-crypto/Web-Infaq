@@ -1,0 +1,69 @@
+# 🕌 Panduan Pengelolaan Website Infaq Masjid Al-Hidayah
+
+Dokumen ini disusun sebagai panduan teknis bagi pengurus Masjid Al-Hidayah untuk meneruskan pengelolaan website setelah masa KKN berakhir.
+
+---
+
+## 🏗️ Struktur Arsitektur Website
+Website ini dibangun menggunakan teknologi modern yang **gratis** (Free Tier) namun sangat stabil:
+1. **GitHub**: Tempat menyimpan kode sumber (coding).
+2. **Vercel**: Tempat menghosting website agar bisa diakses (Hosting).
+3. **Supabase**: Tempat menyimpan data donasi dan foto bukti transfer (Database & Storage).
+4. **Cloudflare**: Jembatan antara domain `minggir.site` ke server Vercel (Security & DNS).
+5. **Hostinger**: Tempat pembelian nama domain (Registrar).
+
+---
+
+## 🛠️ Panduan Pengelolaan Infrastruktur
+
+### 1. Hostinger & Cloudflare (Domain Management)
+Domain `minggir.site` aktif selama 1 tahun (hingga 2025).
+- **Hostinger**: Hanya digunakan untuk membayar perbaikan domain tahun depan. Nameserver-nya tidak boleh diubah dari Cloudflare.
+- **Cloudflare**: Tempat mengatur Subdomain `masjidalhidayah.minggir.site`.
+  - Jika ingin mengubah alamat, masuk ke Cloudflare -> Tab **DNS**.
+  - Pastikan ada record `CNAME` yang mengarah ke `cname.vercel-dns.com`.
+
+### 2. Vercel (Hosting & Publikasi)
+Vercel akan otomatis mengupdate website setiap kali ada perubahan kode di GitHub.
+- **Tugas Pengurus**: Memastikan **Environment Variables** (Secret Keys) tidak dihapus.
+- **Pengecekan**: Jika web mati, cek tab **Deployments** di Vercel untuk melihat log error-nya.
+
+### 3. Supabase (Data & Storage)
+Semua data jamaah ada di sini.
+- **Database**: Jika ada data yang salah input secara fatal, pengurus bisa menghapusnya manual di **Table Editor** -> tabel [Donation](file:///C:/Users/Davin/Documents/kkn/Web-Infaq/web-infaq/src/components/DonationForm.tsx#12-131).
+- **Storage**: Foto bukti transfer disimpan di dalam bucket `payment-proofs`. 
+- **PENTING**: Supabase versi gratis akan otomatis "Pause" (berhenti) jika tidak ada pengunjung selama 1 minggu. Jika web mati, masuk ke Supabase Dashboard dan klik **Restore Project**.
+
+---
+
+## 📝 Pengelolaan Operasional (Harian)
+
+### Akun Admin
+Akses admin menggunakan **Google Sign-In**. 
+- Pastikan email pengurus sudah didaftarkan di kode sumber (jika ingin menambah admin baru).
+- **Link Admin**: `masjidalhidayah.minggir.site/admin`
+
+### CRUD Pengeluaran
+1. Masuk ke halaman admin.
+2. Klik menu **Pengeluaran**.
+3. Input data pengeluaran masjid (Beserta foto nota jika ada).
+4. Data ini akan otomatis mengurangi atau terekap di dashboard internal.
+
+---
+
+## ⚠️ Ketentuan & Hal Penting
+> [!IMPORTANT]
+> **Biaya Tahunan**: Pengurus masjid perlu menyiapkan dana sekitar Rp 150rb - 200rb/tahun (tergantung harga Hostinger) untuk memperpanjang domain `minggir.site` tahun depan.
+
+> [!WARNING]
+> **Keamanan**: Jangan pernah membagikan password Supabase atau isi file [.env](file:///C:/Users/Davin/Documents/kkn/Web-Infaq/web-infaq/.env) kepada siapapun di luar pengurus takmir, karena berisi akses langsung ke database keuangan.
+
+---
+
+## 📞 Kontak Darurat
+Jika terjadi masalah teknis yang tidak bisa diselesaikan:
+- Lakukan **Redeploy** di Vercel (Tombol darurat paling ampuh).
+- Cek **Status Database** di Supabase.
+
+---
+*Dibuat dengan ❤️ oleh Tim KKN - Masjid Al-Hidayah*
