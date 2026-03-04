@@ -11,10 +11,6 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   let totalAcc = 0;
-  let donors: any[] = [];
-
-  // ... (keep the rest the same until </main>)
-
   let latestDonations: any[] = [];
   let activeAgendas: any[] = [];
 
@@ -98,7 +94,7 @@ export default async function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 relative z-20 max-w-6xl">
+      <main className="container mx-auto px-4 relative z-20 max-w-6xl pb-20">
 
         {/* Total Infaq Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-10 text-center border-b-4 border-[#409DA1] transform transition hover:-translate-y-1">
@@ -153,9 +149,9 @@ export default async function Home() {
             {/* Recent Donors List */}
             <div className="mt-8 bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
               <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Donatur Terbaru</h3>
-              {donors.length > 0 ? (
+              {latestDonations.length > 0 ? (
                 <ul className="space-y-4">
-                  {donors.map((donor) => (
+                  {latestDonations.map((donor) => (
                     <li key={donor.id} className="flex justify-between items-center group">
                       <div>
                         <p className="font-semibold text-gray-800 group-hover:text-[#409DA1] transition-colors">{donor.name}</p>
