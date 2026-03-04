@@ -29,9 +29,9 @@ Semua layanan (GitHub, Vercel, Supabase, Cloudflare) wajib menggunakan atau dita
 
 ### 4. Supabase (Data Keuangan & Foto)
 - **Fungsi**: Menyimpan data donatur, nominal infaq, dan foto bukti transfer.
-- **PENTING**: Jika website tidak dikunjungi selama 1-2 minggu, Supabase versi gratis akan otomatis "Pause" (Tidur). 
-  - **Efek**: Web akan muncul error "Database connection unavailable".
-  - **Solusi**: Login ke Supabase dengan email di atas, lalu klik **"Restore Project"**.
+- **PENTING**: Versi gratis Supabase otomatis masuk mode "Pause" jika tidak ada aktivitas.
+- **OTOMATISASI**: Website sudah dilengkapi fitur "Keep-Alive" yang otomatis mengirim sinyal ke database setiap 3 hari agar tidak mati.
+- **Troubleshooting**: Jika web error "Database connection unavailable", login ke Supabase dan klik **"Restore Project"**.
 
 ---
 
