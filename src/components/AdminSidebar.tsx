@@ -45,7 +45,7 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 <h2 className="text-xl font-bold text-[#409DA1]">Admin Infaq</h2>
                 <button
                     onClick={toggleSidebar}
-                    className="p-2 rounded-lg hover:bg-gray-100"
+                    className="p-2.5 rounded-xl bg-gray-900 text-white shadow-lg shadow-gray-200 active:scale-95 transition-all border border-gray-800"
                     aria-label="Toggle Menu"
                 >
                     {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -77,7 +77,7 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
                         <p className="text-xs text-gray-500 mt-1 truncate">{userEmail}</p>
                     </div>
                     <button onClick={toggleSidebar} className="p-2 rounded-lg hover:bg-gray-100">
-                        <X className="w-6 h-6 text-gray-400" />
+                        <X className="w-6 h-6 text-gray-900" />
                     </button>
                 </div>
 
