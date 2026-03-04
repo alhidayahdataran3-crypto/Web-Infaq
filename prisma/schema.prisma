@@ -29,3 +29,21 @@ model Expense {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  action     String   // e.g., "APPROVE_DONATION", "DELETE_DONATION", "EDIT_EXPENSE"
+  details    String   // JSON string or descriptive text
+  adminEmail String?
+  createdAt  DateTime @default(now())
+}
+
+model Agenda {
+  id          Int      @id @default(autoincrement())
+  title       String
+  date        DateTime
+  time        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

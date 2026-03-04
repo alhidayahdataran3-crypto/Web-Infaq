@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Receipt, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Receipt, LogOut, Menu, X, ClipboardList, Calendar } from "lucide-react";
 
 interface AdminSidebarProps {
     userEmail: string | null | undefined;
@@ -16,6 +16,8 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
     const menuItems = [
         { href: "/admin", icon: LayoutDashboard, label: "Infaq Masuk" },
         { href: "/admin/expenses", icon: Receipt, label: "Pengeluaran" },
+        { href: "/admin/agenda", icon: Calendar, label: "Agenda Acara" },
+        { href: "/admin/audit", icon: ClipboardList, label: "Audit Log" },
     ];
 
     const toggleSidebar = () => setIsOpen(!isOpen);
@@ -27,8 +29,8 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 href={href}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${isActive
-                        ? "bg-[#409DA1] text-white shadow-md shadow-[#409DA1]/20"
-                        : "text-gray-700 hover:bg-[#409DA1]/10 hover:text-[#409DA1]"
+                    ? "bg-[#409DA1] text-white shadow-md shadow-[#409DA1]/20"
+                    : "text-gray-700 hover:bg-[#409DA1]/10 hover:text-[#409DA1]"
                     }`}
             >
                 <Icon className="w-5 h-5" /> {label}
@@ -60,7 +62,7 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex md:flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:sticky md:top-0 md:h-screen md:flex md:flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <div className="p-6 border-b border-gray-100 hidden md:block">

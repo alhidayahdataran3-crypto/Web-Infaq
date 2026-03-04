@@ -3,13 +3,33 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+async function createAuditLog(action: string, details: any) {
+    const session = await getServerSession(authOptions);
+    try {
+        await prisma.auditLog.create({
+            data: {
+                action,
+                details: JSON.stringify(details),
+                adminEmail: session?.user?.email || "Unknown Admin",
+            },
+        });
+    } catch (err) {
+        console.error("Audit log failed:", err);
+    }
+}
 
 export async function updateDonationStatus(id: number, status: string) {
     try {
+        const donation = await prisma.donation.findUnique({ where: { id } });
         await prisma.donation.update({
             where: { id },
             data: { status },
         });
+
+        await createAuditLog("UPDATE_STATUS", { id, oldStatus: donation?.status, newStatus: status, name: donation?.name });
 
         revalidatePath("/admin");
         revalidatePath("/");
@@ -22,10 +42,13 @@ export async function updateDonationStatus(id: number, status: string) {
 
 export async function editDonation(id: number, name: string, nominal: number) {
     try {
+        const old = await prisma.donation.findUnique({ where: { id } });
         await prisma.donation.update({
             where: { id },
             data: { name, nominal },
         });
+
+        await createAuditLog("EDIT_DONATION", { id, name, nominal, oldName: old?.name, oldNominal: old?.nominal });
 
         revalidatePath("/admin");
         revalidatePath("/");
@@ -79,9 +102,11 @@ export async function submitExpenseAction(prevState: any, formData: FormData) {
             proofUrl = publicUrl;
         }
 
-        await prisma.expense.create({
+        const expense = await prisma.expense.create({
             data: { name, type, amount, price, proofUrl },
         });
+
+        await createAuditLog("CREATE_EXPENSE", { id: expense.id, name, amount, price });
 
         revalidatePath("/admin/expenses");
         return { success: true, message: "Pengeluaran berhasil dicatat.", error: "" };
@@ -93,9 +118,12 @@ export async function submitExpenseAction(prevState: any, formData: FormData) {
 
 export async function deleteExpense(id: number) {
     try {
+        const old = await prisma.expense.findUnique({ where: { id } });
         await prisma.expense.delete({
             where: { id },
         });
+
+        await createAuditLog("DELETE_EXPENSE", { id, name: old?.name });
 
         revalidatePath("/admin/expenses");
         return { success: true };
@@ -117,10 +145,68 @@ export async function editExpense(id: number, data: { name: string, type: string
             },
         });
 
+        await createAuditLog("EDIT_EXPENSE", { id, ...data });
+
         revalidatePath("/admin/expenses");
         return { success: true };
     } catch (error) {
         console.error("Edit expense error:", error);
         return { error: "Gagal memperbarui pengeluaran" };
+    }
+}
+
+export async function deleteDonation(id: number) {
+    try {
+        const old = await prisma.donation.findUnique({ where: { id } });
+        await prisma.donation.delete({
+            where: { id },
+        });
+
+        await createAuditLog("DELETE_DONATION", { id, name: old?.name });
+
+        revalidatePath("/admin");
+        revalidatePath("/");
+        return { success: true };
+    } catch (error) {
+        console.error("Delete donation error:", error);
+        return { error: "Gagal menghapus data donasi" };
+    }
+}
+
+export async function createAgenda(data: { title: string, date: string, time: string, description: string }) {
+    try {
+        await prisma.agenda.create({
+            data: {
+                title: data.title,
+                date: new Date(data.date),
+                time: data.time,
+                description: data.description,
+            },
+        });
+
+        await createAuditLog("CREATE_AGENDA", { title: data.title });
+
+        revalidatePath("/");
+        revalidatePath("/admin/agenda");
+        return { success: true };
+    } catch (error) {
+        console.error("Create agenda error:", error);
+        return { error: "Gagal membuat agenda" };
+    }
+}
+
+export async function deleteAgenda(id: number) {
+    try {
+        const old = await prisma.agenda.findUnique({ where: { id } });
+        await prisma.agenda.delete({ where: { id } });
+
+        await createAuditLog("DELETE_AGENDA", { title: old?.title });
+
+        revalidatePath("/");
+        revalidatePath("/admin/agenda");
+        return { success: true };
+    } catch (error) {
+        console.error("Delete agenda error:", error);
+        return { error: "Gagal menghapus agenda" };
     }
 }

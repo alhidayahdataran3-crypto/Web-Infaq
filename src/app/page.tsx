@@ -3,7 +3,9 @@ import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { DonationForm } from "@/components/DonationForm";
 import { formatCurrency, formatTimeAgo } from "@/lib/utils";
-import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone } from "lucide-react";
+import { format } from "date-fns";
+import { id } from "date-fns/locale/id";
+import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +15,8 @@ export default async function Home() {
 
   // ... (keep the rest the same until </main>)
 
+  let latestDonations: any[] = [];
+  let activeAgendas: any[] = [];
 
   try {
     const accDonations = await prisma.donation.aggregate({
@@ -24,15 +28,25 @@ export default async function Home() {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    donors = await prisma.donation.findMany({
+    latestDonations = await prisma.donation.findMany({
       where: {
         status: "ACC",
         showName: true,
-        createdAt: { gte: oneWeekAgo }
       },
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { id: true, name: true, nominal: true, createdAt: true },
+    });
+
+    // Fetch agendas that are not expired (H+1 logic)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    activeAgendas = await prisma.agenda.findMany({
+      where: {
+        date: { gte: today }
+      },
+      orderBy: { date: "asc" }
     });
   } catch (error) {
     console.warn("Database connection unavailable at build time, skipping fetch for Home Page.");
@@ -125,6 +139,10 @@ export default async function Home() {
                 />
               </div>
               <p className="text-center text-gray-500 mt-4 text-sm font-medium">Scan QR code di atas menggunakan aplikasi e-wallet atau mobile banking Anda.</p>
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-xs text-yellow-800 flex gap-2 items-start">
+                <span className="font-bold flex-shrink-0">NB:</span>
+                <p>Untuk Infaq/Shadaqah dengan nominal <span className="font-bold text-yellow-900">di atas Rp 500.000</span>, sangat disarankan untuk melalui <span className="font-bold text-yellow-900">Transfer Bank</span> guna menghindari batasan limit QRIS.</p>
+              </div>
             </div>
           </div>
 
@@ -156,6 +174,63 @@ export default async function Home() {
           </div>
         </div>
       </main>
+
+      {/* Agenda & Pengumuman Section */}
+      {activeAgendas.length > 0 && (
+        <section className="py-20 bg-white border-y border-gray-100 relative z-20">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-[#409DA1]/10 text-[#409DA1] px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                  <Calendar className="w-4 h-4" /> Agenda Terdekat
+                </div>
+                <h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
+                  Kegiatan & <span className="text-[#409DA1]">Pengumuman</span>
+                </h2>
+              </div>
+              <p className="text-gray-500 max-w-md text-lg">
+                Ikuti terus berbagai kegiatan dan pengumuman terbaru dari Masjid Al-Hidayah.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {activeAgendas.map((agenda) => (
+                <div key={agenda.id} className="group bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 hover:border-[#409DA1]/30 hover:bg-white transition-all duration-500 hover:shadow-2xl hover:shadow-[#409DA1]/10 relative overflow-hidden">
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#409DA1]/5 rounded-full blur-2xl group-hover:bg-[#409DA1]/10 transition-colors" />
+
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-3 bg-white rounded-2xl shadow-sm group-hover:shadow-md transition-shadow">
+                        <Calendar className="w-5 h-5 text-[#409DA1]" />
+                      </div>
+                      <span className="text-sm font-bold text-gray-400 group-hover:text-gray-600 transition-colors">
+                        {format(new Date(agenda.date), "EEEE, d MMMM yyyy", { locale: id })}
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4 group-hover:text-[#409DA1] transition-colors line-clamp-2 leading-tight">
+                      {agenda.title}
+                    </h3>
+
+                    <div className="flex items-center gap-2 text-[#409DA1] font-bold text-sm mb-6">
+                      <Clock className="w-4 h-4" />
+                      {agenda.time} WIB
+                    </div>
+
+                    {agenda.description && (
+                      <div className="bg-white/50 group-hover:bg-gray-50 p-4 rounded-2xl border border-gray-100/50 transition-colors">
+                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                          {agenda.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Location Map */}
       <section className="container mx-auto px-4 max-w-6xl mt-16 mb-0 relative z-20">
