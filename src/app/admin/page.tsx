@@ -30,6 +30,7 @@ export default async function AdminDashboard({
     let yearlyDonations: any[] = [];
     let yearlyExpenses: any[] = [];
     let totalAllTime = 0;
+    let totalExpenseAllTime = 0;
 
     try {
         // Fetch donations for the selected month (for stats cards)
@@ -68,6 +69,10 @@ export default async function AdminDashboard({
             _sum: { nominal: true },
         });
         totalAllTime = allTimeAcc._sum.nominal || 0;
+
+        // Fetch all expenses ever for total cumulative expense
+        const allExpensesAllTime = await prisma.expense.findMany({ select: { amount: true, price: true } });
+        totalExpenseAllTime = allExpensesAllTime.reduce((sum, e) => sum + (e.price * (e.amount || 1)), 0);
 
     } catch (error) {
         console.warn("Database connection unavailable at build time, skipping fetch for Admin Page.");
@@ -139,20 +144,31 @@ export default async function AdminDashboard({
                 </div>
             </div>
 
-            {/* Total Nominal Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Total Nominal Cards - Cumulative */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-gradient-to-r from-[#409DA1] to-[#2c777a] p-6 rounded-2xl shadow-md text-white">
-                    <p className="text-sm font-semibold uppercase tracking-wider mb-1 opacity-80">
-                        Total Infaq Diterima (Keseluruhan)
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-80">
+                        Total Infaq (Seluruh Waktu)
                     </p>
-                    <h2 className="text-4xl font-extrabold">{formatCurrency(totalAllTime)}</h2>
+                    <h2 className="text-3xl font-extrabold">{formatCurrency(totalAllTime)}</h2>
                 </div>
-                <div className="bg-gradient-to-r from-[#2c777a] to-[#1b4a4c] p-6 rounded-2xl shadow-md text-white">
-                    <p className="text-sm font-semibold uppercase tracking-wider mb-1 opacity-80">
-                        Total Infaq Diterima (Bulan Ini)
+                <div className="bg-gradient-to-r from-red-500 to-red-700 p-6 rounded-2xl shadow-md text-white">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-80">
+                        Total Pengeluaran (Seluruh Waktu)
                     </p>
-                    <h2 className="text-4xl font-extrabold">{formatCurrency(totalIncomeMonth)}</h2>
+                    <h2 className="text-3xl font-extrabold">{formatCurrency(totalExpenseAllTime)}</h2>
                 </div>
+                <div className="bg-gradient-to-r from-[#1b4a4c] to-black p-6 rounded-2xl shadow-md text-white border-2 border-[#409DA1]/30">
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-1 opacity-80 text-[#409DA1]">
+                        Sisa Saldo Kas (Real-time)
+                    </p>
+                    <h2 className="text-3xl font-extrabold text-white">{formatCurrency(totalAllTime - totalExpenseAllTime)}</h2>
+                </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-xl border border-gray-100 mb-8 flex items-center justify-between">
+                <p className="text-sm text-gray-500 font-medium">Infaq Masuk Bulan ini ({monthName}):</p>
+                <p className="text-xl font-bold text-[#409DA1]">{formatCurrency(totalIncomeMonth)}</p>
             </div>
 
             <AdminDonationTable
