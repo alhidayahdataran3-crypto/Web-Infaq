@@ -5,7 +5,7 @@ import { DonationForm } from "@/components/DonationForm";
 import { formatCurrency, formatTimeAgo } from "@/lib/utils";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
-import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock } from "lucide-react";
+import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock, ClipboardList, Receipt } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -13,17 +13,52 @@ export default async function Home() {
   let totalAcc = 0;
   let latestDonations: any[] = [];
   let activeAgendas: any[] = [];
+  let transparencyData = {
+    totalIncomeMonth: 0,
+    totalIncomeAllTime: 0,
+    totalExpenseMonth: 0,
+    totalExpenseAllTime: 0,
+    monthlyExpenses: [] as any[],
+  };
 
   try {
-    const accDonations = await prisma.donation.aggregate({
+    // Transparency Data Logic
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+    // 1. All Time Income
+    const allTimeInfaqAcc = await prisma.donation.aggregate({
       where: { status: "ACC" },
       _sum: { nominal: true },
     });
-    totalAcc = accDonations._sum.nominal || 0;
+    transparencyData.totalIncomeAllTime = allTimeInfaqAcc._sum.nominal || 0;
+    totalAcc = transparencyData.totalIncomeAllTime;
 
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    // 2. Monthly Income
+    const monthlyInfaqAcc = await prisma.donation.aggregate({
+      where: {
+        status: "ACC",
+        createdAt: { gte: startOfMonth, lte: endOfMonth }
+      },
+      _sum: { nominal: true },
+    });
+    transparencyData.totalIncomeMonth = monthlyInfaqAcc._sum.nominal || 0;
 
+    // 3. All Time Expenses
+    const allExpenses = await prisma.expense.findMany({ select: { amount: true, price: true } });
+    transparencyData.totalExpenseAllTime = allExpenses.reduce((sum, e) => sum + (e.amount * e.price), 0);
+
+    // 4. Monthly Expenses (Detailed for Table)
+    transparencyData.monthlyExpenses = await prisma.expense.findMany({
+      where: {
+        createdAt: { gte: startOfMonth, lte: endOfMonth }
+      },
+      orderBy: { createdAt: "desc" }
+    });
+    transparencyData.totalExpenseMonth = transparencyData.monthlyExpenses.reduce((sum, e) => sum + (e.amount * e.price), 0);
+
+    // Keep existing latest donations logic
     latestDonations = await prisma.donation.findMany({
       where: {
         status: "ACC",
@@ -34,7 +69,7 @@ export default async function Home() {
       select: { id: true, name: true, nominal: true, createdAt: true },
     });
 
-    // Fetch agendas that are not expired (H+1 logic)
+    // Fetch agendas
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -166,6 +201,89 @@ export default async function Home() {
               ) : (
                 <p className="text-gray-500 text-center py-4 bg-gray-50 rounded-xl">Belum ada donatur yang dapat ditampilkan.</p>
               )}
+            </div>
+          </div>
+        </div>
+        {/* Financial Transparency Section */}
+        <div className="mt-16 bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-[#1b4344] to-[#409DA1] p-8 text-white">
+            <h3 className="text-2xl font-bold flex items-center gap-3">
+              <ClipboardList className="w-8 h-8 opacity-90" />
+              Transparansi Keuangan
+            </h3>
+            <p className="text-white/80 text-sm mt-1">Laporan real-time pengelolaan dana Masjid Al-Hidayah</p>
+          </div>
+
+          <div className="p-8">
+            {/* Transparency Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+              <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Infaq Bulan Ini</p>
+                <p className="text-xl font-bold text-teal-600">{formatCurrency(transparencyData.totalIncomeMonth)}</p>
+              </div>
+              <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pengeluaran Bulan Ini</p>
+                <p className="text-xl font-bold text-red-500">{formatCurrency(transparencyData.totalExpenseMonth)}</p>
+              </div>
+              <div className="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Infaq (Seluruh Waktu)</p>
+                <p className="text-xl font-bold text-gray-800">{formatCurrency(transparencyData.totalIncomeAllTime)}</p>
+              </div>
+              <div className="bg-teal-50 p-5 rounded-2xl border border-teal-100">
+                <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mb-1">Sisa Saldo Saat Ini</p>
+                <p className="text-xl font-bold text-teal-700">{formatCurrency(transparencyData.totalIncomeAllTime - transparencyData.totalExpenseAllTime)}</p>
+              </div>
+            </div>
+
+            {/* Monthly Expense List */}
+            <div>
+              <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2 text-lg">
+                <Receipt className="w-6 h-6 text-[#409DA1]" />
+                Rincian Pengeluaran {format(new Date(), "MMMM yyyy", { locale: id })}
+              </h4>
+              <div className="overflow-x-auto rounded-2xl border border-gray-100">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-widest">
+                    <tr>
+                      <th className="px-6 py-4">Tanggal</th>
+                      <th className="px-6 py-4">Keperluan</th>
+                      <th className="px-6 py-4 text-right">Nominal</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {transparencyData.monthlyExpenses.length > 0 ? (
+                      transparencyData.monthlyExpenses.map((exp) => (
+                        <tr key={exp.id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="px-6 py-4 text-gray-400 font-medium">
+                            {format(new Date(exp.createdAt), "dd/MM/yyyy")}
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="text-gray-900 font-bold">{exp.name}</p>
+                            <p className="text-[10px] text-gray-400 uppercase font-bold">{exp.type}</p>
+                          </td>
+                          <td className="px-6 py-4 text-right font-bold text-red-500">
+                            -{formatCurrency(exp.amount * exp.price)}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={3} className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
+                              <Receipt className="w-6 h-6 text-gray-300" />
+                            </div>
+                            <p className="text-gray-400 font-medium italic">Belum ada catatan pengeluaran bulan ini.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[10px] text-gray-400 mt-4 text-center">
+                * Data diperbarui secara otomatis ketika admin mencatat transaksi baru.
+              </p>
             </div>
           </div>
         </div>
