@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -32,6 +32,11 @@ export default function ExpenseTable({
     const [expenses, setExpenses] = useState(initialExpenses);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
+
+    // Sync state with props when server-side revalidation happens
+    useEffect(() => {
+        setExpenses(initialExpenses);
+    }, [initialExpenses]);
 
     const handleDelete = async (id: number) => {
         if (!confirm("Apakah Anda yakin ingin menghapus data pengeluaran ini?")) return;
