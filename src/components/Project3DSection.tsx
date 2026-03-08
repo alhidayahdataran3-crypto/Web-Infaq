@@ -70,12 +70,12 @@ export default function Project3DSection() {
                         <div className="relative aspect-square bg-gray-50 rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden shadow-gray-200">
                             <model-viewer
                                 src="/3d/dapurr5.glb"
-                                poster="/3d-poster.png"
                                 alt="3D Model Dapur Masjid Al-Hidayah"
                                 auto-rotate
                                 camera-controls
                                 ar
                                 shadow-intensity="1"
+                                loading="eager"
                                 className="w-full h-full outline-none"
                                 stage-light-intensity="2"
                                 environment-intensity="1.5"

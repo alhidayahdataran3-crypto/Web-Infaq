@@ -374,6 +374,12 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* 3D Project Visualization Section */}
+      <Project3DSection />
+
+      {/* News Carousel Section */}
+      {news.length > 0 && <NewsCarousel news={JSON.parse(JSON.stringify(news))} />}
+
       {/* Footer */}
       <footer className="bg-[#1b4344] text-white pt-16 pb-8 border-t-4 border-[#409DA1] mt-16">
         <div className="container mx-auto px-4 max-w-6xl">
@@ -389,13 +395,7 @@ export default async function Home() {
               </p>
             </div>
 
-            {/* 3D Project Visualization Section */}
-      <Project3DSection />
-
-      {/* News Carousel Section */}
-      {news.length > 0 && <NewsCarousel news={JSON.parse(JSON.stringify(news))} />}
-
-      {/* Contact Info */}
+            {/* Contact Info */}
             <div>
               <h4 className="text-lg font-bold mb-6 text-[#409DA1]">Hubungi Kami</h4>
               <ul className="space-y-4">
