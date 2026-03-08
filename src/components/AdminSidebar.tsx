@@ -17,6 +17,7 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
         { href: "/admin", icon: LayoutDashboard, label: "Infaq Masuk" },
         { href: "/admin/expenses", icon: Receipt, label: "Pengeluaran" },
         { href: "/admin/agenda", icon: Calendar, label: "Agenda Acara" },
+        { href: "/admin/news", icon: ClipboardList, label: "Berita & Kabar" },
         { href: "/admin/audit", icon: ClipboardList, label: "Audit Log" },
     ];
 

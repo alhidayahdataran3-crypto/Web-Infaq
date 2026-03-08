@@ -5,7 +5,8 @@ import { DonationForm } from "@/components/DonationForm";
 import { formatCurrency, formatTimeAgo } from "@/lib/utils";
 import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
-import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock, ClipboardList, Receipt } from "lucide-react";
+import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock, ClipboardList, Receipt, Newspaper } from "lucide-react";
+import NewsCarousel from "@/components/NewsCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export default async function Home() {
   let totalAcc = 0;
   let latestDonations: any[] = [];
   let activeAgendas: any[] = [];
+  let news: any[] = [];
   let transparencyData = {
     totalIncomeMonth: 0,
     totalIncomeAllTime: 0,
@@ -67,6 +69,12 @@ export default async function Home() {
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { id: true, name: true, nominal: true, createdAt: true },
+    });
+
+    // Fetch news for carousel
+    news = await prisma.news.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5
     });
 
     // Fetch agendas
@@ -380,7 +388,10 @@ export default async function Home() {
               </p>
             </div>
 
-            {/* Contact Info */}
+            {/* News Carousel Section */}
+      {news.length > 0 && <NewsCarousel news={JSON.parse(JSON.stringify(news))} />}
+
+      {/* Contact Info */}
             <div>
               <h4 className="text-lg font-bold mb-6 text-[#409DA1]">Hubungi Kami</h4>
               <ul className="space-y-4">

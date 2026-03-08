@@ -210,3 +210,92 @@ export async function deleteAgenda(id: number) {
         return { error: "Gagal menghapus agenda" };
     }
 }
+export async function submitNewsAction(prevState: any, formData: FormData) {
+    try {
+        const title = formData.get("title") as string;
+        const externalUrl = formData.get("externalUrl") as string;
+        const file = formData.get("image") as File | null;
+
+        if (!title) {
+            return { success: false, message: "", error: "Harap isi judul berita." };
+        }
+
+        let imageUrl = null;
+        if (file && file.size > 0) {
+            const uniquePrefix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+            const ext = file.name.split(".").pop() || "jpg";
+            const filename = `news-${uniquePrefix}.${ext}`;
+
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+
+            const { error: uploadError } = await supabase.storage
+                .from("payment-proofs") // Reuse existing bucket or create new
+                .upload(filename, buffer, {
+                    contentType: file.type || 'image/jpeg',
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error("Supabase news upload error:", uploadError);
+                return { success: false, message: "", error: "Gagal mengunggah foto berita." };
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from("payment-proofs")
+                .getPublicUrl(filename);
+
+            imageUrl = publicUrl;
+        }
+
+        const news = await prisma.news.create({
+            data: { title, imageUrl, externalUrl },
+        });
+
+        await createAuditLog("CREATE_NEWS", { id: news.id, title });
+
+        revalidatePath("/");
+        revalidatePath("/admin/news");
+        return { success: true, message: "Berita berhasil diterbitkan.", error: "" };
+    } catch (error) {
+        console.error("News create error:", error);
+        return { success: false, message: "", error: "Gagal menyimpan berita." };
+    }
+}
+
+export async function editNews(id: number, data: { title: string, externalUrl: string }) {
+    try {
+        await prisma.news.update({
+            where: { id },
+            data: {
+                title: data.title,
+                externalUrl: data.externalUrl,
+            },
+        });
+
+        await createAuditLog("EDIT_NEWS", { id, ...data });
+
+        revalidatePath("/");
+        revalidatePath("/admin/news");
+        return { success: true };
+    } catch (error) {
+        console.error("Edit news error:", error);
+        return { error: "Gagal memperbarui berita" };
+    }
+}
+
+export async function deleteNews(id: number) {
+    try {
+        const old = await prisma.news.findUnique({ where: { id } });
+        await prisma.news.delete({ where: { id } });
+
+        await createAuditLog("DELETE_NEWS", { id, title: old?.title });
+
+        revalidatePath("/");
+        revalidatePath("/admin/news");
+        return { success: true };
+    } catch (error) {
+        console.error("Delete news error:", error);
+        return { error: "Gagal menghapus berita" };
+    }
+}
