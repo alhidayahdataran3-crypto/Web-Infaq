@@ -31,6 +31,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" async></script>
       </body>
     </html>
   );

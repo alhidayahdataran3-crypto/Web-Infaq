@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale/id";
 import { MapPin, Building2, Landmark, CheckCircle2, LogIn, Mail, Instagram, Phone, Calendar, Clock, ClipboardList, Receipt, Newspaper } from "lucide-react";
 import NewsCarousel from "@/components/NewsCarousel";
+import Project3DSection from "@/components/Project3DSection";
 
 export const dynamic = "force-dynamic";
 
@@ -388,7 +389,10 @@ export default async function Home() {
               </p>
             </div>
 
-            {/* News Carousel Section */}
+            {/* 3D Project Visualization Section */}
+      <Project3DSection />
+
+      {/* News Carousel Section */}
       {news.length > 0 && <NewsCarousel news={JSON.parse(JSON.stringify(news))} />}
 
       {/* Contact Info */}
